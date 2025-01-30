@@ -1,0 +1,27 @@
+package pedroPathing.constants;
+
+import com.pedropathing.localization.*;
+import com.pedropathing.localization.constants.*;
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
+
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+
+public class LConstants {
+    static {
+        PinpointConstants.forwardY = -43.75;
+        PinpointConstants.strafeX = -104.35;
+        PinpointConstants.distanceUnit = DistanceUnit.MM;
+        PinpointConstants.hardwareMapName = "Pinpoint";
+        PinpointConstants.useYawScalar = false;
+        PinpointConstants.yawScalar = 1.0;
+        PinpointConstants.useCustomEncoderResolution = false;
+        PinpointConstants.encoderResolution = GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD;
+        PinpointConstants.customEncoderResolution = 13.26291192;
+        PinpointConstants.forwardEncoderDirection = GoBildaPinpointDriver.EncoderDirection.REVERSED;
+        PinpointConstants.strafeEncoderDirection = GoBildaPinpointDriver.EncoderDirection.FORWARD;
+    }
+}
+
+
+
+
