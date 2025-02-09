@@ -17,6 +17,13 @@ apply from: '../build.dependencies.gradle'
 
 android {
     namespace = 'org.firstinspires.ftc.teamcode'
+    sourceSets {
+        main {
+            java {
+                srcDirs 'src\\main\\java', 'src\\main\\java\\2'
+            }
+        }
+    }
 
     packagingOptions {
         jniLibs.useLegacyPackaging true
@@ -29,4 +36,6 @@ dependencies {
 
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.7'
     implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.4.21'
+
+    implementation 'org.ftclib.ftclib:core:2.0.1'
 }

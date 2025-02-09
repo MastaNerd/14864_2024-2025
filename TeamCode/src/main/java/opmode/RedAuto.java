@@ -1,37 +1,11 @@
-package pedroPathing.examples;
+package opmode;
+
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import com.pedropathing.follower.Follower;
-import com.pedropathing.localization.Pose;
-import com.pedropathing.pathgen.BezierCurve;
-import com.pedropathing.pathgen.BezierLine;
-import com.pedropathing.pathgen.Path;
-import com.pedropathing.pathgen.PathChain;
-import com.pedropathing.pathgen.Point;
-import com.pedropathing.util.Constants;
+import config.runmodes.Auto;
 import com.pedropathing.util.Timer;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import  com.qualcomm.robotcore.eventloop.opmode.OpMode;
-
-import pedroPathing.constants.FConstants;
-import pedroPathing.constants.LConstants;
-
-import com.qualcomm.hardware.lynx.LynxModule;
-import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.IMU;
-import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.hardware.VoltageSensor;
-
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
-
-import java.lang.Math;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * This is an example auto that showcases movement and control of two servos autonomously.
@@ -43,8 +17,8 @@ import java.util.List;
  * @version 2.0, 11/28/2024
  */
 
-@Autonomous(name = "RedAutoReal", group = "Examples")
-public class RedAutoReal extends OpMode {
+@Autonomous(name = "RightAuto", group = "Examples")
+public class RedAuto extends OpMode {
 
     private Follower follower;
     private Timer pathTimer, actionTimer, opmodeTimer;
@@ -52,7 +26,6 @@ public class RedAutoReal extends OpMode {
     /** This is the variable where we store the state of our auto.
      * It is used by the pathUpdate method. */
     private int pathState;
-    private int specState;
 
     private DcMotor SpecimenSlideMotor;
     private Servo SpecimenServo;
@@ -326,27 +299,9 @@ public class RedAutoReal extends OpMode {
                 break;
             case 11:
                 /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the scorePose's position */
-                if(!follower.isBusy() && SpecimenSlideMotor.getCurrentPosition() > 15) {
+                if(!follower.isBusy()) {
                     /* Score Sample */
                     /* Since this is a pathChain, we can have Pedro hold the end point while we are parked */
-                    switch(specState) {
-                        case 0:
-                            SpecimenSlideMotor.setPower(0);
-                            SpecimenServo.setPosition(0.15);
-                            setSpecState(1);
-                            break;
-                        case 1:
-                            if (SpecimenSlideMotor.getCurrentPosition() < 100){
-                                SpecimenSlideMotor.setPower(0.5);
-                            }
-                            else if(SpecimenSlideMotor.getCurrentPosition() < 2000){
-                                SpecimenSlideMotor.setPower(1);
-                            }
-                            else{
-                                SpecimenServo.setPosition(1);
-                                SpecimenSlideMotor.setPower(0);
-                            }
-                    }
 
                     follower.followPath(scoreFromPickup,true);
                     setPathState(12);
@@ -437,19 +392,8 @@ public class RedAutoReal extends OpMode {
     /** These change the states of the paths and actions
      * It will also reset the timers of the individual switches **/
     public void setPathState(int pState) {
-        if (pathState != pState && (pState == 11 || pState == 13 || pState == 15 || pState == 17)) {
-            SpecimenSlideMotor.setPower(0.3);
-        }
-
-        if (pathState != pState && (pState == 12 || pState == 14 || pState == 16 || pState == 18)) {
-            SpecimenSlideMotor.setPower(-1);
-        }
         pathState = pState;
         pathTimer.resetTimer();
-    }
-
-    public void setSpecState(int sState) {
-        specState = sState;
     }
 
     /** This is the main loop of the OpMode, it will run repeatedly after clicking "Play". **/
@@ -496,7 +440,6 @@ public class RedAutoReal extends OpMode {
     public void start() {
         opmodeTimer.resetTimer();
         setPathState(0);
-        setSpecState(0);
     }
 
     /** We do not use this because everything should automatically disable **/
