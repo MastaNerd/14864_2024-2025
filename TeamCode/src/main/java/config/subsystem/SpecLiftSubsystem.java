@@ -39,6 +39,8 @@ public class SpecLiftSubsystem {
         specLift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         specLift.setDirection(DcMotorSimple.Direction.REVERSE);
 
+        specClaw = hardwareMap.get(Servo.class, "Specimen Servo");
+
 
         liftPID = new PIDController(p, i, d);
 
@@ -117,11 +119,15 @@ public class SpecLiftSubsystem {
     public void toScore() {
         manual = false;
         setTarget(specLiftToScore);
+        specClaw.setPosition(specClawClose);
     }
 
 
     public void toHumanPlayer() {
         setTarget(specLiftToHumanPlayer);
+        if(getPos() < 1700){
+            specClaw.setPosition(specClawOpen);
+        }
     }
 
     public void toTransfer() {

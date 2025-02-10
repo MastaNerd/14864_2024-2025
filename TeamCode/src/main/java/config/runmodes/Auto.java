@@ -14,13 +14,18 @@ import com.pedropathing.pathgen.PathChain;
 import com.pedropathing.pathgen.Point;
 import com.pedropathing.util.Constants;
 import com.pedropathing.util.Timer;
+
+import config.subsystem.ServoArmSubsystem;
 import config.subsystem.SpecLiftSubsystem;
+
 
 public class Auto {
 
     private RobotStart startLocation;
 
     public SpecLiftSubsystem specLift;
+    public ServoArmSubsystem servoArm;
+    public ServoArmSubsystem.ArmState armState;
 
 
     public Follower follower;
@@ -33,11 +38,12 @@ public class Auto {
     public int transferState = -1, bucketState = -1, chamberState = -1, intakeState = -1, parkState = -1, specimenState = -1;
 
     public Path element1, score1, element2, score2, element3, score3, scorePreload;
-    public PathChain pushSamples, preload, to1, to2, to3, place1, place2, place3, grab1, grab2, grab3, scoreFromPickup, scoreToPickup, specPickup, park;
+    public PathChain preload, to1, to2, to3, place1, place2, place3, grab1, grab2, grab3, scoreFromPickup, scoreToPickup, specPickup, park;
     public Pose startPose, preloadPose, scorePose, sample1Pose, sample1ControlPose, sample2Pose, sample2ControlPose, sample3Pose, sample3ControlPose, sampleScorePose, parkControlPose, parkPose, grab1Pose, specimen1Pose, grab2Pose, specimen2Pose, grab3Pose, specimen3Pose, grab4Pose, specimen4Pose, specimenSetPose, to1Pose, to2Pose, to3Pose, place1Pose, place2Pose, place3Pose, specPickupPose;
 
     public Auto(HardwareMap hardwareMap, Telemetry telemetry, Follower follower, boolean isBlue, boolean isBucket) {
         specLift = new SpecLiftSubsystem(hardwareMap, telemetry);
+        servoArm = new ServoArmSubsystem(hardwareMap, armState);
 
         this.follower = follower;
         this.telemetry = telemetry;
