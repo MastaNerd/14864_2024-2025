@@ -19,7 +19,7 @@ public class ServoArmSubsystem {
     public ElapsedTime timer;
 
     public ServoArmSubsystem(HardwareMap hardwareMap, ArmState state) {
-        LeftArmServo = hardwareMap.get(Servo.class, "LeftArmServo");
+        LeftArmServo = hardwareMap.get(Servo.class, "Left Arm Servo");
         RightArmServo = hardwareMap.get(Servo.class, "RightArmServo");
         ClawSpinner = hardwareMap.get(CRServo.class, "ClawSpinner");
         ClawWrist = hardwareMap.get(Servo.class, "ClawWrist");

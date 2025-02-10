@@ -1,11 +1,16 @@
 package opmode;
 
+import com.pedropathing.util.Constants;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import com.pedropathing.follower.Follower;
 import config.runmodes.Auto;
+import pedroPathing.constants.FConstants;
+import pedroPathing.constants.LConstants;
+
 import com.pedropathing.util.Timer;
+
 
 @Autonomous(name="Observation", group="A")
 public class RightAuto extends OpMode {
@@ -16,6 +21,7 @@ public class RightAuto extends OpMode {
 
     @Override
     public void init() {
+        Constants.setConstants(FConstants.class, LConstants.class);
         auto = new Auto(hardwareMap, telemetry, new Follower(hardwareMap), true, false);
     }
 
@@ -39,6 +45,7 @@ public class RightAuto extends OpMode {
         switch (pathState) {
             case 0:
                 auto.follower.followPath(auto.scorePreload);
+                auto.specClaw.close();
                 setPathState(1);
                 break;
             case 1:

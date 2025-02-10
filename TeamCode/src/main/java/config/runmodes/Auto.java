@@ -18,6 +18,8 @@ import com.pedropathing.util.Timer;
 import config.subsystem.ServoArmSubsystem;
 import config.subsystem.SpecClawSubsystem;
 import config.subsystem.SpecLiftSubsystem;
+import pedroPathing.constants.FConstants;
+import pedroPathing.constants.LConstants;
 
 
 public class Auto {
@@ -140,12 +142,12 @@ public class Auto {
     public void buildPaths() {
         if((startLocation == RobotStart.BLUE_BUCKET) || (startLocation == RobotStart.RED_BUCKET)) {
             preload = follower.pathBuilder()
-                    .addPath(new BezierLine(new Point(startPose), new Point(preloadPose)))
-                    .setLinearHeadingInterpolation(startPose.getHeading(), preloadPose.getHeading())
+                    .addPath(new BezierLine(new Point(startPose), new Point(scorePose)))
+                    .setLinearHeadingInterpolation(startPose.getHeading(), scorePose.getHeading())
                     .build();
 
-            element1 = new Path(new BezierCurve(new Point(preloadPose), new Point(sample1ControlPose), new Point(sample1Pose)));
-            element1.setLinearHeadingInterpolation(preloadPose.getHeading(), sample1Pose.getHeading());
+            element1 = new Path(new BezierCurve(new Point(scorePose), new Point(sample1ControlPose), new Point(sample1Pose)));
+            element1.setLinearHeadingInterpolation(scorePose.getHeading(), sample1Pose.getHeading());
 
             score1 = new Path(new BezierLine(new Point(sample1Pose), new Point(sampleScorePose)));
             score1.setLinearHeadingInterpolation(sample1Pose.getHeading(), sampleScorePose.getHeading());
