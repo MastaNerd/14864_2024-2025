@@ -16,6 +16,7 @@ import com.pedropathing.util.Constants;
 import com.pedropathing.util.Timer;
 
 import config.subsystem.ServoArmSubsystem;
+import config.subsystem.SpecClawSubsystem;
 import config.subsystem.SpecLiftSubsystem;
 
 
@@ -25,7 +26,9 @@ public class Auto {
 
     public SpecLiftSubsystem specLift;
     public ServoArmSubsystem servoArm;
+    public SpecClawSubsystem specClaw;
     public ServoArmSubsystem.ArmState armState;
+    public SpecClawSubsystem.ClawGrabState grabState;
 
 
     public Follower follower;
@@ -44,6 +47,7 @@ public class Auto {
     public Auto(HardwareMap hardwareMap, Telemetry telemetry, Follower follower, boolean isBlue, boolean isBucket) {
         specLift = new SpecLiftSubsystem(hardwareMap, telemetry);
         servoArm = new ServoArmSubsystem(hardwareMap, armState);
+        specClaw = new SpecClawSubsystem(hardwareMap, grabState);
 
         this.follower = follower;
         this.telemetry = telemetry;

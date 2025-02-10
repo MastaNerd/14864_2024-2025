@@ -39,9 +39,6 @@ public class SpecLiftSubsystem {
         specLift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         specLift.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        specClaw = hardwareMap.get(Servo.class, "Specimen Servo");
-
-
         liftPID = new PIDController(p, i, d);
 
     }
