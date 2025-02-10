@@ -5,8 +5,7 @@ import static config.util.RobotConstants.*;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
-import config.util.action.RunAction;
-
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class ServoArmSubsystem {
 
@@ -17,7 +16,7 @@ public class ServoArmSubsystem {
     public Servo LeftArmServo, RightArmServo, ClawWrist;
     public CRServo ClawSpinner;
     public ArmState state;
-    public RunAction toTransfer, toScoring;
+    public ElapsedTime timer;
 
     public ServoArmSubsystem(HardwareMap hardwareMap, ArmState state) {
         LeftArmServo = hardwareMap.get(Servo.class, "LeftArmServo");
@@ -28,8 +27,33 @@ public class ServoArmSubsystem {
         ClawSpinner.setDirection(CRServo.Direction.REVERSE);
         this.state = state;
 
-        toTransfer = new RunAction(this::transfer);
-        toScoring = new RunAction(this::score);
+    }
+
+    public void setArmPos(double lTargetAngle, double rTargetAngle){
+        double lCurrentAngle = LeftArmServo.getPosition();
+        double rCurrentAngle = RightArmServo.getPosition();
+
+
+        double angle_step = 5;
+
+        double lastTime = timer.seconds();
+
+        while (Math.abs(lCurrentAngle - lTargetAngle) < 0.01) {
+
+            if (timer.seconds() - lastTime > 0.1) {
+
+                lastTime = timer.seconds();
+
+                if (lCurrentAngle < lTargetAngle) {
+
+                    lCurrentAngle = lTargetAngle + angle_step;
+                    rCurrentAngle = rTargetAngle + angle_step;
+
+                }
+                LeftArmServo.setPosition(lCurrentAngle);
+                RightArmServo.setPosition(rCurrentAngle);
+            }
+        }
     }
 
     // State //
@@ -124,6 +148,7 @@ public class ServoArmSubsystem {
     // Init + Start //
     public void init() {
         initArm();
+        timer = new ElapsedTime();
     }
 
     public void start() {
