@@ -20,11 +20,9 @@ public class SpecLiftSubsystem {
     private Telemetry telemetry;
 
     public DcMotor specLift;
-    public Servo specClaw;
     public boolean manual = false;
     public boolean hang = false;
     public int pos, bottom;
-    public RunAction toZero, toHighBucket, toHighChamber, toHumanPlayer, toTransfer, toPark;
     public PIDController liftPID;
     public static int target;
     public static double p = 0.01, i = 0, d = 0;
@@ -116,15 +114,11 @@ public class SpecLiftSubsystem {
     public void toScore() {
         manual = false;
         setTarget(specLiftToScore);
-        specClaw.setPosition(specClawClose);
     }
 
 
     public void toHumanPlayer() {
         setTarget(specLiftToHumanPlayer);
-        if(getPos() < 1700){
-            specClaw.setPosition(specClawOpen);
-        }
     }
 
     public void toTransfer() {

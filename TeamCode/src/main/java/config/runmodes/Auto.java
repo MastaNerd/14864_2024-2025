@@ -42,11 +42,13 @@ public class Auto {
     public Timer transferTimer = new Timer(), bucketTimer = new Timer(), chamberTimer = new Timer(), intakeTimer = new Timer(), parkTimer = new Timer(), specimenTimer = new Timer(), chamberTimer2 = new Timer();
     public int transferState = -1, bucketState = -1, chamberState = -1, intakeState = -1, parkState = -1, specimenState = -1;
 
-    public Path element1, score1, element2, score2, element3, score3, scorePreload;
-    public PathChain preload, to1, to2, to3, place1, place2, place3, grab1, grab2, grab3, scoreFromPickup, scoreToPickup, specPickup, park;
+    public Path element1, score1, element2, score2, element3, score3;
+    public PathChain scorePreload, preload, to1, to2, to3, place1, place2, place3, grab1, grab2, grab3, scoreFromPickup, scoreToPickup, specPickup, park;
     public Pose startPose, preloadPose, scorePose, sample1Pose, sample1ControlPose, sample2Pose, sample2ControlPose, sample3Pose, sample3ControlPose, sampleScorePose, parkControlPose, parkPose, grab1Pose, specimen1Pose, grab2Pose, specimen2Pose, grab3Pose, specimen3Pose, grab4Pose, specimen4Pose, specimenSetPose, to1Pose, to2Pose, to3Pose, place1Pose, place2Pose, place3Pose, specPickupPose;
 
     public Auto(HardwareMap hardwareMap, Telemetry telemetry, Follower follower, boolean isBlue, boolean isBucket) {
+        Constants.setConstants(FConstants.class, LConstants.class);
+
         specLift = new SpecLiftSubsystem(hardwareMap, telemetry);
         servoArm = new ServoArmSubsystem(hardwareMap, armState);
         specClaw = new SpecClawSubsystem(hardwareMap, grabState);
@@ -58,6 +60,7 @@ public class Auto {
 
         createPoses();
         buildPaths();
+        telemetry.addData("start",startPose);
 
         init();
     }
@@ -83,18 +86,18 @@ public class Auto {
         else
             specLift.updatePIDF();
 
-        transfer();
-        bucket();
-        chamber();
+      /*  transfer();
         park();
         specimen();
-        telemetryUpdate();
+        telemetryUpdate();*/
+        if (follower.isBusy()) {
+            follower.telemetryDebug(telemetry);
+        }
     }
 
     public void createPoses() { //Able to be cut
         switch (startLocation) {
             case BLUE_BUCKET:
-                startPose = blueBucketStartPose;
                 preloadPose = blueBucketPreloadPose;
                 sample1ControlPose = blueBucketLeftSampleControlPose;
                 sample1Pose = blueBucketLeftSamplePose;
@@ -104,7 +107,6 @@ public class Auto {
                 sample3Pose = blueBucketRightSamplePose;
                 sampleScorePose = blueBucketScorePose;
                 parkControlPose = blueBucketParkControlPose;
-                parkPose = blueBucketParkPose;
                 break;
 
             case BLUE_OBSERVATION:
@@ -112,6 +114,7 @@ public class Auto {
                 scorePose = blueObservationPreloadPose;
                 to1Pose = blueObservationPickupLeftPose;
                 to2Pose = blueObservationPickupMidPose;
+                to3Pose = blueObservationPickupRightPose;
                 to3Pose = blueObservationPickupRightPose;
                 grab1Pose = blueObservationPickupLeftPoseForward;
                 grab2Pose = blueObservationPickupMidPoseForward;
@@ -142,8 +145,8 @@ public class Auto {
     public void buildPaths() {
         if((startLocation == RobotStart.BLUE_BUCKET) || (startLocation == RobotStart.RED_BUCKET)) {
             preload = follower.pathBuilder()
-                    .addPath(new BezierLine(new Point(startPose), new Point(scorePose)))
-                    .setLinearHeadingInterpolation(startPose.getHeading(), scorePose.getHeading())
+                    .addPath(new BezierLine(new Point(blueObservationStartPose), new Point(blueObservationPreloadPose)))
+                    .setLinearHeadingInterpolation(blueObservationStartPose.getHeading(), blueObservationPreloadPose.getHeading())
                     .build();
 
             element1 = new Path(new BezierCurve(new Point(scorePose), new Point(sample1ControlPose), new Point(sample1Pose)));
@@ -171,8 +174,10 @@ public class Auto {
         }
 
         if (startLocation == RobotStart.BLUE_OBSERVATION || startLocation == RobotStart.RED_OBSERVATION) {
-            scorePreload = new Path(new BezierLine(new Point(startPose), new Point(scorePose)));
-            scorePreload.setLinearHeadingInterpolation(startPose.getHeading(), scorePose.getHeading());
+            scorePreload = follower.pathBuilder()
+                    .addPath(new BezierLine(new Point(blueObservationStartPose), new Point(blueObservationPreloadPose)))
+                    .setLinearHeadingInterpolation(blueObservationStartPose.getHeading(), blueObservationPreloadPose.getHeading())
+                    .build();
 
             to1 = follower.pathBuilder()
                     .addPath(new BezierLine(new Point(scorePose), new Point(to1Pose)))

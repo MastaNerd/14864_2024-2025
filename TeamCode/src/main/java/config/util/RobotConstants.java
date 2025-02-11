@@ -21,6 +21,8 @@ public class RobotConstants {
     public static double rArmTransfer= lArmTransfer - 0.045;
     public static double lArmDeposit = 0.595;
     public static double rArmDeposit = lArmDeposit - 0.045;
+    public static double lArmMiddle = 0.725;
+    public static double rArmMiddle = lArmMiddle - 0.045;
     public static double lArmInit = 0.195;
     public static double rArmInit = lArmInit - 0.045;
     public static double lArmSpecimenGrab = 0.855;
@@ -36,7 +38,7 @@ public class RobotConstants {
 
     public static int liftToTransfer = 200;
     public static int specLiftToZero = 0;
-    public static int specLiftToHumanPlayer = 50;
+    public static int specLiftToHumanPlayer = 25;
     public static int specLiftToScore = 2000;
 
 
