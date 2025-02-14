@@ -1,4 +1,3 @@
-
 package config.subsystem;
 
 import static config.util.RobotConstants.*;
@@ -9,17 +8,14 @@ import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.Servo;
-
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 import config.util.RobotConstants;
-import config.util.action.RunAction;
 
-public class SpecLiftSubsystem {
+public class RegLiftSubsystem {
     private Telemetry telemetry;
 
-    public DcMotor specLift;
+    public DcMotor rightLift, leftLift;
     public boolean manual = false;
     public boolean hang = false;
     public int pos, bottom;
@@ -29,15 +25,19 @@ public class SpecLiftSubsystem {
     public static double f = 0.005;
 
 
-    public SpecLiftSubsystem(HardwareMap hardwareMap, Telemetry telemetry) {
+    public RegLiftSubsystem(HardwareMap hardwareMap, Telemetry telemetry) {
         this.telemetry = telemetry;
         this.telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        specLift = hardwareMap.get(DcMotor.class, "Specimen Slide Motor");
-        specLift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        specLift.setDirection(DcMotorSimple.Direction.REVERSE);
-        specLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        specLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightLift = hardwareMap.get(DcMotor.class, "Right Arm Motor");
+        leftLift = hardwareMap.get(DcMotor.class, "Left Arm Motor");
+
+        rightLift.setDirection(DcMotor.Direction.REVERSE);
+        leftLift.setDirection(DcMotor.Direction.FORWARD);
+        rightLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        leftLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
 
         liftPID = new PIDController(p, i, d);
 
@@ -47,14 +47,16 @@ public class SpecLiftSubsystem {
         if (!manual) {
             liftPID.setPID(p,i,d);
 
-            specLift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+            rightLift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+            leftLift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
             double pid = liftPID.calculate(getPos(), target);
             double ticks_in_degrees = 537.7 / 360.0;
             double ff = Math.cos(Math.toRadians(target / ticks_in_degrees)) * f;
             double power = pid + ff;
 
-            specLift.setPower(power);
+            rightLift.setPower(power);
+            leftLift.setPower(power);
 
             telemetry.addData("lift pos", getPos());
             telemetry.addData("lift target", target);
@@ -64,13 +66,15 @@ public class SpecLiftSubsystem {
     public void manual(double n){
         manual = true;
 
-        specLift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightLift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftLift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         if(hang) {
             n = -0.75;
         }
 
-        specLift.setPower(n);
+        rightLift.setPower(n);
+        leftLift.setPower(n);
     }
 
     //Util
@@ -92,8 +96,8 @@ public class SpecLiftSubsystem {
     }
 
     public int getPos() {
-        pos = specLift.getCurrentPosition() - bottom;
-        return specLift.getCurrentPosition() - bottom;
+        pos = rightLift.getCurrentPosition() - bottom;
+        return rightLift.getCurrentPosition() - bottom;
     }
 
     // OpMode
@@ -110,25 +114,12 @@ public class SpecLiftSubsystem {
 
     public void toZero() {
         manual = false;
-        setTarget(specLiftToZero);
+        setTarget(liftToZero);
     }
 
-    public void toScore() {
+    public void toHighBucket() {
         manual = false;
-        setTarget(specLiftToScore);
-    }
-
-
-    public void toHumanPlayer() {
-        setTarget(specLiftToHumanPlayer);
-    }
-
-    public void toTransfer() {
-        setTarget(liftToTransfer);
-    }
-
-    public void toPark() {
-        setTarget(specLiftToZero);
+        setTarget(liftToHighBucket);
     }
 
 }

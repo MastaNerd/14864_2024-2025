@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 public class ServoArmSubsystem {
 
     public enum ArmState {
-        TRANSFER, SCORING, INIT, SPECIMENGRAB, SPECIMENPLACE, SPECIMENBACKPLACE, SPECIMENRETURN
+        TRANSFER, SCORING, INIT, SPECIMENGRAB, SPECIMENPLACE, SPECIMENBACKPLACE, RETURN, TOBASKET, TOP, MIDDLE
     }
 
     public Servo LeftArmServo, RightArmServo, ClawWrist;
@@ -29,77 +29,50 @@ public class ServoArmSubsystem {
 
     }
 
-    public void setArmPos(double lTargetAngle, double rTargetAngle){
-        double lCurrentAngle = LeftArmServo.getPosition();
-        double rCurrentAngle = RightArmServo.getPosition();
-
-
-        double angle_step = 5;
-
-        double lastTime = timer.seconds();
-
-        while (Math.abs(lCurrentAngle - lTargetAngle) < 0.01) {
-
-            if (timer.seconds() - lastTime > 0.1) {
-
-                lastTime = timer.seconds();
-
-                if (lCurrentAngle < lTargetAngle) {
-
-                    lCurrentAngle = lTargetAngle + angle_step;
-                    rCurrentAngle = rTargetAngle + angle_step;
-
-                }
-                LeftArmServo.setPosition(lCurrentAngle);
-                RightArmServo.setPosition(rCurrentAngle);
-            }
-        }
-    }
-
     // State //
     public void setState(ArmState armState) {
         if (armState == ArmState.TRANSFER) {
             LeftArmServo.setPosition(lArmTransfer);
             RightArmServo.setPosition(rArmTransfer);
-            ClawSpinner.setPower(spinnerStop);
             ClawWrist.setPosition(clawWristInit);
             this.state = ArmState.TRANSFER;
-        } else if (armState == ArmState.SCORING) {
+        } else if (armState == ArmState.TOBASKET) {
             LeftArmServo.setPosition(lArmDeposit);
             RightArmServo.setPosition(rArmDeposit);
-            ClawSpinner.setPower(spinnerEject);
+            ClawWrist.setPosition(clawWristInit);
+        }else if (armState == ArmState.TOP) {
+            LeftArmServo.setPosition(lArmDeposit);
+            RightArmServo.setPosition(rArmDeposit);
+            ClawWrist.setPosition(clawWristInit);
+        }else if (armState == ArmState.MIDDLE) {
+            LeftArmServo.setPosition(lArmMiddle);
+            RightArmServo.setPosition(rArmMiddle);
+            ClawWrist.setPosition(clawWristInit);
+        }else if (armState == ArmState.SCORING) {
+            LeftArmServo.setPosition(lArmDeposit);
+            RightArmServo.setPosition(rArmDeposit);
             ClawWrist.setPosition(clawWristDeposit);
             this.state = ArmState.SCORING;
         } else if (armState == ArmState.INIT) {
             LeftArmServo.setPosition(lArmInit);
             RightArmServo.setPosition(rArmInit);
-            ClawSpinner.setPower(spinnerStop);
             ClawWrist.setPosition(clawWristInit);
             this.state = ArmState.INIT;
         } else if (armState == ArmState.SPECIMENGRAB) {
             LeftArmServo.setPosition(lArmSpecimenGrab);
             RightArmServo.setPosition(rArmSpecimenGrab);
-            ClawSpinner.setPower(spinnerLoad);
             ClawWrist.setPosition(clawWristGrab);
             this.state = ArmState.SPECIMENGRAB;
-        } else if (armState == ArmState.SPECIMENBACKPLACE) {
-            LeftArmServo.setPosition(lArmSpecimenBackPlace);
-            RightArmServo.setPosition(rArmSpecimenBackPlace);
-            ClawSpinner.setPower(spinnerEject);
-            ClawWrist.setPosition(clawWristBackPlace);
-            this.state = ArmState.SPECIMENBACKPLACE;
         } else if (armState == ArmState.SPECIMENPLACE) {
             LeftArmServo.setPosition(lArmSpecimenPlace);
             RightArmServo.setPosition(rArmSpecimenPlace);
-            ClawSpinner.setPower(spinnerEject);
             ClawWrist.setPosition(clawWristPlace);
             this.state = ArmState.SPECIMENPLACE;
-        }else if (armState == ArmState.SPECIMENRETURN) {
+        }else if (armState == ArmState.RETURN) {
             LeftArmServo.setPosition(lArmSpecimenReturn);
             RightArmServo.setPosition(rArmSpecimenReturn);
-            ClawSpinner.setPower(spinnerStop);
             ClawWrist.setPosition(clawWristReturn);
-            this.state = ArmState.SPECIMENRETURN;
+            this.state = ArmState.RETURN;
         }
     }
 
@@ -129,12 +102,20 @@ public class ServoArmSubsystem {
         setState(ArmState.SPECIMENPLACE);
     }
 
-    public void specimenBackPlace() {
-        setState(ArmState.SPECIMENBACKPLACE);
+    public void toReturn() {
+        setState(ArmState.RETURN);
     }
 
-    public void specimenReturn() {
-        setState(ArmState.SPECIMENRETURN);
+    public void toMiddle() {
+        setState(ArmState.MIDDLE);
+    }
+
+    public void toTop() {
+        setState(ArmState.TOP);
+    }
+
+    public void toBasket() {
+        setState(ArmState.TOBASKET);
     }
 
     public void initArm() {setState(ArmState.INIT);}

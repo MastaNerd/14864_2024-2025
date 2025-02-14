@@ -32,7 +32,7 @@ import java.util.LinkedList;
 import java.util.List;
 import static config.util.RobotConstants.*;
 
-@Autonomous(name = "test", group = "Examples")
+@Autonomous(name = "4spec", group = "Examples")
 public class Testuto extends OpMode {
     public SpecLiftSubsystem specLift;
     private Follower follower;
@@ -61,29 +61,30 @@ public class Testuto extends OpMode {
     /** Scoring Pose of our robot. It is facing the submersible at a -45 degree (315 degree) angle. */
     private final Pose scorePose = new Pose(38.5, 66, Math.toRadians(270));
     /** Lowest (First) Sample from the Spike Mark */
-    private final Pose pickup1Pose = new Pose(26.5, 40.5, Math.toRadians(315));
+    private final Pose pickup1Pose = new Pose(26, 42, Math.toRadians(315));
     /** Lowest (First) Sample from the Spike Mark */
-    private final Pose pickup1PoseForward = new Pose(33.5, 36, Math.toRadians(315));
+    private final Pose pickup1PoseForward = new Pose(33, 35, Math.toRadians(315));
     /**Dropoff Pose for HP */
     private final Pose dropoff1Pose = new Pose(22, 39, Math.toRadians(225));
     /** Middle (Second) Sample from the Spike Mark */
-    private final Pose pickup2Pose = new Pose(25.5, 31.5, Math.toRadians(315));
+    private final Pose pickup2Pose = new Pose(26, 32, Math.toRadians(315));
     /** Lowest (First) Sample from the Spike Mark */
-    private final Pose pickup2PoseForward = new Pose(31, 26, Math.toRadians(315));
+    private final Pose pickup2PoseForward = new Pose(33, 25, Math.toRadians(315));
     /**Dropoff Pose for HP */
     private final Pose dropoff2Pose = new Pose(22, 29, Math.toRadians(225));
     /** Highest (Third) Sample from the Spike Mark */
-    private final Pose pickup3Pose = new Pose(26.5, 25.5, Math.toRadians(315));
+    private final Pose pickup3Pose = new Pose(24, 24, Math.toRadians(315));
     /** Lowest (First) Sample from the Spike Mark */
-    private final Pose pickup3PoseForward = new Pose(31, 16, Math.toRadians(315));
+    private final Pose pickup3PoseForward = new Pose(31, 17, Math.toRadians(315));
     /** Park Pose for our robot, after we do all of the scoring. */
-    private final Pose specPickupPose = new Pose(9.5, 36.25, Math.toRadians(90));
+    private final Pose specPickupPoseMid = new Pose(15.75, 32.65, Math.toRadians(27.5));
+    private final Pose specPickupPose = new Pose(9, 36.25, Math.toRadians(90));
     /** Park Control Pose for our robot, this is used to manipulate the bezier curve that we will create for the parking.
      * The Robot will not go to this pose, it is used a control point for our bezier curve. */
     private final Pose parkPose = new Pose(10, 20, Math.toRadians(270));
     /* These are our Paths and PathChains that we will define in buildPaths() */
     private Path scorePreload;
-    private PathChain toPickup1, toPickup2, toPickup3, grabPickup1, grabPickup2, grabPickup3, placePickup1, placePickup2, placePickup3, specPickup, scoreFromPickup, scoreToPickup, toPark;
+    private PathChain toPickup1, toPickup2, toPickup3, grabPickup1, grabPickup2, grabPickup3, placePickup1, placePickup2, placePickup3, specPickup, scoreFromPickup, scoreToPickup, specPickupMid, toPark;
     /** Build the paths for the auto (adds, for example, constant/linear headings while doing paths)
      * It is necessary to do this so that all the paths are built before the auto starts. **/
     public void buildPaths() {
@@ -150,9 +151,13 @@ public class Testuto extends OpMode {
                 .addPath(new BezierLine(new Point(pickup3PoseForward), new Point(dropoff2Pose)))
                 .setLinearHeadingInterpolation(pickup3PoseForward.getHeading(), dropoff2Pose.getHeading())
                 .build();
+        specPickupMid = follower.pathBuilder()
+                .addPath(new BezierLine(new Point(dropoff2Pose), new Point(specPickupPoseMid)))
+                .setLinearHeadingInterpolation(dropoff2Pose.getHeading(), specPickupPoseMid.getHeading())
+                .build();
         specPickup = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(dropoff2Pose), new Point(specPickupPose)))
-                .setLinearHeadingInterpolation(dropoff2Pose.getHeading(), specPickupPose.getHeading())
+                .addPath(new BezierLine(new Point(specPickupPoseMid), new Point(specPickupPose)))
+                .setLinearHeadingInterpolation(specPickupPoseMid.getHeading(), specPickupPose.getHeading())
                 .build();
         scoreFromPickup = follower.pathBuilder()
                 .addPath(new BezierLine(new Point(specPickupPose), new Point(scorePose)))
@@ -176,6 +181,7 @@ public class Testuto extends OpMode {
                 follower.followPath(scorePreload);
                 specLift.setTarget(2000);
                 SpecimenServo.setPosition(1);
+                LeftArmServo.setPosition(lArmDeposit);
                 LeftArmServo.setPosition(lArmDeposit);
                 RightArmServo.setPosition(rArmDeposit);
                 setPathState(1);
@@ -202,12 +208,6 @@ public class Testuto extends OpMode {
                 }
                 break;
             case 3:
-                /* You could check for
-                - Follower State: "if(!follower.isBusy() {}"
-                - Time: "if(pathTimer.getElapsedTimeSeconds() > 1) {}"
-                - Robot Position: "if(follower.getPose().getX() > 36) {}"
-                */
-                /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the scorePose's position */
 
                 if(!follower.isBusy()) {
                     /* Score Preload */
@@ -222,6 +222,8 @@ public class Testuto extends OpMode {
                 if(!follower.isBusy()) {
                     /* Grab Sample */
                     /* Since this is a pathChain, we can have Pedro hold the end point while we are scoring the sample */
+                    LeftArmServo.setPosition(lArmSpecimenPlace);
+                    RightArmServo.setPosition(rArmSpecimenPlace);
                     follower.followPath(placePickup1,true);
                     setPathState(5);
                 }
@@ -248,6 +250,8 @@ public class Testuto extends OpMode {
                 if(!follower.isBusy()) {
                     /* Score Preload */
                     /* Since this is a pathChain, we can have Pedro hold the end point while we are grabbing the sample */
+                    LeftArmServo.setPosition(lArmSpecimenGrab);
+                    RightArmServo.setPosition(rArmSpecimenGrab);
                     follower.followPath(grabPickup2,true);
                     ClawSpinner.setPower(1);
                     setPathState(8);
@@ -258,6 +262,8 @@ public class Testuto extends OpMode {
                 if(!follower.isBusy()) {
                     /* Grab Sample */
                     /* Since this is a pathChain, we can have Pedro hold the end point while we are scoring the sample */
+                    LeftArmServo.setPosition(lArmSpecimenPlace);
+                    RightArmServo.setPosition(rArmSpecimenPlace);
                     follower.followPath(placePickup2,true);
                     setPathState(9);
                 }
@@ -282,7 +288,8 @@ public class Testuto extends OpMode {
             case 11:
                 if(!follower.isBusy()) {
                     /* Score Preload */
-                    /* Since this is a pathChain, we can have Pedro hold the end point while we are grabbing the sample */
+                    LeftArmServo.setPosition(lArmSpecimenGrab);
+                    RightArmServo.setPosition(rArmSpecimenGrab);
                     follower.followPath(grabPickup3,true);
                     ClawSpinner.setPower(1);
                     setPathState(12);
@@ -293,6 +300,8 @@ public class Testuto extends OpMode {
                 if(!follower.isBusy()) {
                     /* Grab Sample */
                     /* Since this is a pathChain, we can have Pedro hold the end point while we are scoring the sample */
+                    LeftArmServo.setPosition(lArmSpecimenPlace);
+                    RightArmServo.setPosition(rArmSpecimenPlace);
                     follower.followPath(placePickup3,true);
                     setPathState(13);
                 }
@@ -307,20 +316,22 @@ public class Testuto extends OpMode {
                 }
                 break;
             case 14:
-                /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the pickup1Pose's position */
-                if(pathTimer.getElapsedTimeSeconds() > 0.5) {
-                    /* Grab Sample */
-                    /* Since this is a pathChain, we can have Pedro hold the end point while we are scoring the sample */
+                /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the scorePose's position */
+                if(pathTimer.getElapsedTimeSeconds() > 1) {
+                    /* Score Sample */
+                    /* Since this is a pathChain, we can have Pedro hold the end point while we are parked */
+                    follower.followPath(specPickupMid,true);
                     LeftArmServo.setPosition(lArmInit);
                     RightArmServo.setPosition(rArmInit);
                     ClawWrist.setPosition(clawWristInit);
                     ClawSpinner.setPower(0);
+                    specLift.toHumanPlayer();
                     setPathState(15);
                 }
                 break;
             case 15:
                 /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the scorePose's position */
-                if(pathTimer.getElapsedTimeSeconds() > 3) {
+                if(!follower.isBusy()) {
                     /* Score Sample */
                     /* Since this is a pathChain, we can have Pedro hold the end point while we are parked */
                     follower.followPath(specPickup,true);
