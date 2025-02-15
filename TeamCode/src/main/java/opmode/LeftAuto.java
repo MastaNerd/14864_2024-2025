@@ -34,7 +34,7 @@ import java.util.LinkedList;
 import java.util.List;
 import static config.util.RobotConstants.*;
 
-@Autonomous(name = "LeftAuto", group = "Examples")
+@Autonomous(name = "5-Sample", group = "Examples")
 public class LeftAuto extends OpMode {
     public SpecLiftSubsystem specLift;
     public RegLiftSubsystem regLift;
@@ -43,8 +43,6 @@ public class LeftAuto extends OpMode {
 
     private Follower follower;
     private Timer pathTimer, actionTimer, opmodeTimer;
-    /** This is the variable where we store the state of our auto.
-     * It is used by the pathUpdate method. */
     private int pathState;
     private DcMotor SpecimenSlideMotor;
     private Servo SpecimenServo, LeftArmServo, RightArmServo, ClawWrist;
@@ -53,21 +51,22 @@ public class LeftAuto extends OpMode {
     public boolean actionBusy, specLiftPIDF, regLiftPIDF = true;
     public double specliftManual = 0;
 
-
-    /* Create and Define Poses + Paths
-     * Poses are built with three constructors: x, y, and heading (in Radians).
-     * Pedro uses 0 - 144 for x and y, with 0, 0 being on the bottom left.
-     * (For Into the Deep, this would be Blue Observation Zone (0,0) to Red Observation Zone (144,144).)
-     * Even though Pedro uses a different coordinate system than RR, you can convert any roadrunner pose by adding +72 both the x and y.
-     * This visualizer is very easy to use to find and create paths/pathchains/poses: <https://pedro-path-generator.vercel.app/>
-     * Lets assume our robot is 18 by 18 inches
-     * Lets assume the Robot is facing the human player and we want to score in the bucket */
     /** Start Pose of our robot */
     private final Pose startPose = new Pose(7.000, 105.000, Math.toRadians(90));
     /** Scoring Pose of our robot. It is facing the submersible at a -45 degree (315 degree) angle. */
     private final Pose offWallPose = new Pose(17.000, 112.000, Math.toRadians(90));
+    private final Pose basketPose = new Pose(22.000, 122.000, Math.toRadians(135));
     private final Pose scorePose = new Pose(17.000, 127.000, Math.toRadians(135));
-    private final Pose pickup1Pose = new Pose(39, 109.000, Math.toRadians(60));
+    private final Pose pickup1Pose = new Pose(36, 109.000, Math.toRadians(60));
+    private final Point pickup1CPoint = new Point(35, 77, Point.CARTESIAN);
+    private final Pose pickup2Pose = new Pose(36, 119.500, Math.toRadians(60));
+    private final Point pickup2CPoint = new Point(42, 77, Point.CARTESIAN);
+    private final Pose pickup3Pose = new Pose(43, 120.5, Math.toRadians(80));
+    private final Point pickup3CPoint = new Point(54, 102, Point.CARTESIAN);
+    private final Point score3CPoint = new Point(45, 116, Point.CARTESIAN);
+    private final Pose midpickup4Pose = new Pose(12.000, 80.000, Math.toRadians(-90));
+    private final Pose pickup4Pose = new Pose(12.000, 37.000, Math.toRadians(-90));
+
 
     private Path scorePreload;
     private PathChain offWall, score1, score2, score3, score4, score5, pickup2, pickup3, pickup4, pickup5, toBasket2, toBasket3, toBasket4, toBasket5, midPickup5, midBasket5;
@@ -89,150 +88,147 @@ public class LeftAuto extends OpMode {
                 .addPath(
                         new BezierCurve(
                                 new Point(scorePose),
-                                new Point(35, 82, Point.CARTESIAN),
+                                pickup1CPoint,
                                 new Point(pickup1Pose)
                         )
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(60), 0.4)
+                .setLinearHeadingInterpolation(scorePose.getHeading(), pickup1Pose.getHeading(), 0.6)
                 .build();
 
         toBasket2 = follower.pathBuilder()
                 .addPath(
                         new BezierLine(
                                 new Point(pickup1Pose),
-                                new Point(22.000, 122.000, Point.CARTESIAN)
+                                new Point(basketPose)
                         )
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(60), Math.toRadians(135))
+                .setLinearHeadingInterpolation(pickup1Pose.getHeading(), basketPose.getHeading())
                 .build();
 
         score2 = follower.pathBuilder()
                 .addPath(
                         new BezierLine(
-                                new Point(22.000, 122.000, Point.CARTESIAN),
-                                new Point(17.000, 127.000, Point.CARTESIAN)
+                                new Point(basketPose),
+                                new Point(scorePose)
                         )
                 )
-                .setConstantHeadingInterpolation(Math.toRadians(135))
+                .setLinearHeadingInterpolation(basketPose.getHeading(), scorePose.getHeading())
                 .build();
 
         pickup3 = follower.pathBuilder()
                 .addPath(
                         new BezierCurve(
-                                new Point(17.000, 127.000, Point.CARTESIAN),
-                                new Point(42.000, 96.000, Point.CARTESIAN),
-                                new Point(37.5, 119.500, Point.CARTESIAN)
+                                new Point(scorePose),
+                                pickup2CPoint,
+                                new Point(pickup2Pose)
                         )
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(60),.4)
+                .setLinearHeadingInterpolation(scorePose.getHeading(), pickup2Pose.getHeading(), 0.6)
                 .build();
 
         toBasket3 = follower.pathBuilder()
                 .addPath(
                         new BezierLine(
-                                new Point(37.5, 119.500, Point.CARTESIAN),
-                                new Point(22.000, 122.000, Point.CARTESIAN)
+                                new Point(pickup2Pose),
+                                new Point(basketPose)
                         )
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(60), Math.toRadians(135))
+                .setLinearHeadingInterpolation(pickup2Pose.getHeading(), basketPose.getHeading())
                 .build();
 
         score3 = follower.pathBuilder()
                 .addPath(
                         new BezierLine(
-                                new Point(22.000, 122.000, Point.CARTESIAN),
-                                new Point(17.000, 127.000, Point.CARTESIAN)
+                                new Point(basketPose),
+                                new Point(scorePose)
                         )
                 )
-                .setConstantHeadingInterpolation(Math.toRadians(135))
+                .setLinearHeadingInterpolation(basketPose.getHeading(), scorePose.getHeading())
                 .build();
 
         pickup4 = follower.pathBuilder()
                 .addPath(
                         new BezierCurve(
-                                new Point(17.000, 127.000, Point.CARTESIAN),
-                                new Point(37.5, 111, Point.CARTESIAN),
-                                new Point(42, 124, Point.CARTESIAN)
+                                new Point(scorePose),
+                                pickup3CPoint,
+                                new Point(pickup3Pose)
                         )
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(80), 0.4)
+                .setLinearHeadingInterpolation(scorePose.getHeading(), pickup3Pose.getHeading(), 0.6)
                 .build();
 
         toBasket4 = follower.pathBuilder()
                 .addPath(
                         new BezierCurve(
-                                new Point(43.000, 128.500, Point.CARTESIAN),
-                                new Point(45.000, 116.000, Point.CARTESIAN),
-                                new Point(22.000, 122.000, Point.CARTESIAN)
+                                new Point(pickup3Pose),
+                                score3CPoint,
+                                new Point(basketPose)
                         )
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(80), Math.toRadians(135))
+                .setLinearHeadingInterpolation(pickup3Pose.getHeading(), basketPose.getHeading())
                 .build();
 
         score4 = follower.pathBuilder()
                 .addPath(
                         new BezierLine(
-                                new Point(22.000, 122.000, Point.CARTESIAN),
-                                new Point(17.000, 127.000, Point.CARTESIAN)
+                                new Point(basketPose),
+                                new Point(scorePose)
                         )
                 )
-                .setConstantHeadingInterpolation(Math.toRadians(135))
+                .setLinearHeadingInterpolation(basketPose.getHeading(), scorePose.getHeading())
                 .build();
 
         midPickup5 = follower.pathBuilder()
                 .addPath(
                         new BezierLine(
-                                new Point(17.000, 127.000, Point.CARTESIAN),
-                                new Point(12.000, 80.000, Point.CARTESIAN)
+                                new Point(scorePose),
+                                new Point(midpickup4Pose)
                         )
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(-90))
+                .setLinearHeadingInterpolation(scorePose.getHeading(), midpickup4Pose.getHeading())
                 .build();
 
         pickup5 = follower.pathBuilder()
                 .addPath(
                         new BezierLine(
-                                new Point(12.000, 80.000, Point.CARTESIAN),
-                                new Point(12.000, 37.000, Point.CARTESIAN)
+                                new Point(midpickup4Pose),
+                                new Point(pickup4Pose)
                         )
                 )
-                .setConstantHeadingInterpolation(Math.toRadians(-90))
+                .setLinearHeadingInterpolation(midpickup4Pose.getHeading(), pickup4Pose.getHeading())
                 .build();
 
         midBasket5 = follower.pathBuilder()
                 .addPath(
                         new BezierLine(
-                                new Point(12.000, 37.000, Point.CARTESIAN),
-                                new Point(12.000, 80.000, Point.CARTESIAN)
+                                new Point(pickup4Pose),
+                                new Point(midpickup4Pose)
                         )
                 )
-                .setConstantHeadingInterpolation(Math.toRadians(-90))
+                .setLinearHeadingInterpolation(pickup4Pose.getHeading(), midpickup4Pose.getHeading())
                 .build();
 
         toBasket5 = follower.pathBuilder()
                 .addPath(
                         new BezierLine(
-                                new Point(12.000, 80.000, Point.CARTESIAN),
-                                new Point(22.000, 122.000, Point.CARTESIAN)
+                                new Point(midpickup4Pose),
+                                new Point(basketPose)
                         )
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(-90), Math.toRadians(135))
+                .setLinearHeadingInterpolation(midpickup4Pose.getHeading(), basketPose.getHeading())
                 .build();
 
         score5 = follower.pathBuilder()
                 .addPath(
                         new BezierLine(
-                                new Point(22.000, 122.000, Point.CARTESIAN),
-                                new Point(17.000, 127.000, Point.CARTESIAN)
+                                new Point(basketPose),
+                                new Point(scorePose)
                         )
                 )
-                .setConstantHeadingInterpolation(Math.toRadians(135))
+                .setLinearHeadingInterpolation(basketPose.getHeading(), scorePose.getHeading())
                 .build();
 
     }
-    /** This switch is called continuously and runs the pathing, at certain points, it triggers the action state.
-     * Everytime the switch changes case, it will reset the timer. (This is because of the setPathState() method)
-     * The followPath() function sets the follower to run the specific path, but does NOT wait for it to finish before moving on. */
     public void autonomousPathUpdate() {
         switch (pathState) {
             case 0:
@@ -244,31 +240,37 @@ public class LeftAuto extends OpMode {
             case 1:
                 if(!follower.isBusy()) {
                     servoArm.score();
+                    follower.setMaxPower(0.5);
                     follower.followPath(score1,true);
                     setPathState(2);
                 }
                 break;
             case 2:
                 if(!follower.isBusy()) {
+                    follower.setMaxPower(1);
                     ClawSpinner.setPower(-1);
                     setPathState(3);
                 }
                 break;
             case 3:
-                if(pathTimer.getElapsedTimeSeconds() > 0.5) {
+                if(pathTimer.getElapsedTimeSeconds() > 0.75) {
                     follower.followPath(pickup2,true);
                     setPathState(4);
                 }
                 break;
             case 4:
-                if(follower.getCurrentTValue() > 0.02){
+                if(follower.getCurrentTValue() > 0.05){
                     regLift.toZero();
                 }
                 if(follower.getCurrentTValue() > 0.1){
                     servoArm.specimenGrab();
                     ClawSpinner.setPower(1);
                 }
+                if(follower.getCurrentTValue() > 0.6){
+                    follower.setMaxPower(0.5);
+                }
                 if(!follower.isBusy()) {
+                    follower.setMaxPower(1);
                     regLift.toHighBucket();
                     servoArm.toBasket();
                     follower.followPath(toBasket2,true);
@@ -276,33 +278,39 @@ public class LeftAuto extends OpMode {
                 }
                 break;
             case 5:
-                if(!follower.isBusy()) {
+                if(!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 0.3) {
                     servoArm.score();
+                    follower.setMaxPower(0.5);
                     follower.followPath(score2,true);
                     setPathState(6);
                 }
                 break;
             case 6:
                 if(!follower.isBusy()) {
+                    follower.setMaxPower(1);
                     ClawSpinner.setPower(-1);
                     setPathState(7);
                 }
                 break;
             case 7:
-                if(pathTimer.getElapsedTimeSeconds() > 0.5) {
+                if(pathTimer.getElapsedTimeSeconds() > 0.75) {
                     follower.followPath(pickup3,true);
                     setPathState(8);
                 }
                 break;
             case 8:
-                if(follower.getCurrentTValue() > 0.02){
+                if(follower.getCurrentTValue() > 0.05){
                     regLift.toZero();
                 }
-                if(follower.getCurrentTValue() > 0.05){
+                if(follower.getCurrentTValue() > 0.1){
                     servoArm.specimenGrab();
                     ClawSpinner.setPower(1);
                 }
+                if(follower.getCurrentTValue() > 0.6){
+                    follower.setMaxPower(0.5);
+                }
                 if(!follower.isBusy()) {
+                    follower.setMaxPower(1);
                     regLift.toHighBucket();
                     servoArm.toBasket();
                     follower.followPath(toBasket3,true);
@@ -311,33 +319,39 @@ public class LeftAuto extends OpMode {
                 }
                 break;
             case 9:
-                if(!follower.isBusy()) {
+                if(!follower.isBusy()  && pathTimer.getElapsedTimeSeconds() > 0.3)  {
                     servoArm.score();
+                    follower.setMaxPower(0.5);
                     follower.followPath(score3,true);
                     setPathState(10);
                 }
                 break;
             case 10:
                 if(!follower.isBusy()) {
+                    follower.setMaxPower(1);
                     ClawSpinner.setPower(-1);
                     setPathState(11);
                 }
                 break;
             case 11:
-                if(pathTimer.getElapsedTimeSeconds() > 0.5) {
+                if(pathTimer.getElapsedTimeSeconds() > 0.75) {
                     follower.followPath(pickup4,true);
                     setPathState(12);
                 }
                 break;
             case 12:
-                if(follower.getCurrentTValue() > 0.02){
+                if(follower.getCurrentTValue() > 0.05){
                     regLift.toZero();
                 }
-                if(follower.getCurrentTValue() > 0.05){
+                if(follower.getCurrentTValue() > 0.1){
                     servoArm.specimenGrab();
                     ClawSpinner.setPower(1);
                 }
+                if(follower.getCurrentTValue() > 0.6){
+                    follower.setMaxPower(0.5);
+                }
                 if(!follower.isBusy()) {
+                    follower.setMaxPower(1);
                     regLift.toHighBucket();
                     servoArm.toBasket();
                     follower.followPath(toBasket3,true);
@@ -345,14 +359,16 @@ public class LeftAuto extends OpMode {
                 }
                 break;
             case 13:
-                if(!follower.isBusy()) {
+                if(!follower.isBusy()  && pathTimer.getElapsedTimeSeconds() > 0.3) {
                     servoArm.score();
+                    follower.setMaxPower(0.5);
                     follower.followPath(score3,true);
                     setPathState(14);
                 }
                 break;
             case 14:
                 if(!follower.isBusy()) {
+                    follower.setMaxPower(1);
                     ClawSpinner.setPower(-1);
                     setPathState(15);
                 }
@@ -382,7 +398,7 @@ public class LeftAuto extends OpMode {
                 }
                 break;
             case 19:
-                if(!follower.isBusy()) {
+                if(!follower.isBusy()  && pathTimer.getElapsedTimeSeconds() > 0.3) {
                     follower.followPath(score5,true);
                     setPathState(20);
                 }
@@ -397,16 +413,12 @@ public class LeftAuto extends OpMode {
 
         }
     }
-    /** These change the states of the paths and actions
-     * It will also reset the timers of the individual switches **/
     public void setPathState(int pState) {
         pathState = pState;
         pathTimer.resetTimer();
     }
-    /** This is the main loop of the OpMode, it will run repeatedly after clicking "Play". **/
     @Override
     public void loop() {
-        // These loop the movements of the robot
         follower.update();
         autonomousPathUpdate();
 
@@ -420,6 +432,12 @@ public class LeftAuto extends OpMode {
         else
             regLift.updatePIDF();
 
+        boolean isStopped = gamepad1.left_bumper;
+
+        if (isStopped){
+            follower.breakFollowing();
+            setPathState(-1);
+        }
         // Feedback to Driver Hub
         telemetry.addData("path state", pathState);
         telemetry.addData("x", follower.getPose().getX());
@@ -434,17 +452,7 @@ public class LeftAuto extends OpMode {
         opmodeTimer = new Timer();
         opmodeTimer.resetTimer();
 
-        SpecimenSlideMotor = hardwareMap.get(DcMotor.class, "Specimen Slide Motor");
-        SpecimenSlideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        SpecimenSlideMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        SpecimenServo = hardwareMap.get(Servo.class, "Specimen Servo");
-
-        LeftArmServo = hardwareMap.get(Servo.class, "Left Arm Servo");
-        RightArmServo = hardwareMap.get(Servo.class, "RightArmServo");
         ClawSpinner = hardwareMap.get(CRServo.class, "ClawSpinner");
-        ClawWrist = hardwareMap.get(Servo.class, "ClawWrist");
-        LeftArmServo.setDirection(Servo.Direction.REVERSE);
-        ClawSpinner.setDirection(CRServo.Direction.REVERSE);
 
         Constants.setConstants(FConstants.class, LConstants.class);
         follower = new Follower(hardwareMap);
