@@ -55,15 +55,15 @@ public class RedAuto extends OpMode {
     /** Scoring Pose of our robot. It is facing the submersible at a -45 degree (315 degree) angle. */
     private final Pose scorePose = new Pose(38, 66, Math.toRadians(270));
     /** Lowest (First) Sample from the Spike Mark */
-    private final Pose pickup1Pose = new Pose(35, 35, Math.toRadians(300));
+    private final Pose pickup1Pose = new Pose(34.5, 35, Math.toRadians(300));
     /** Lowest (First) Sample from the Spike Mark */
     private final Point pickupCPoint1 = new Point(33, 51, Point.CARTESIAN);
     /**Dropoff Pose for HP */
     private final Pose place1Pose = new Pose(25, 38, Math.toRadians(-143));
     /** Middle (Second) Sample from the Spike Mark */
-    private final Pose pickup2Pose = new Pose(31.5, 27, Math.toRadians(-60));
+    private final Pose pickup2Pose = new Pose(32.5, 27, Math.toRadians(-60));
     /** Lowest (First) Sample from the Spike Mark */
-    private final Point pickupCPoint2 = new Point(38.000, 50.000, Point.CARTESIAN);
+    private final Point pickupCPoint2 = new Point(40.000, 50.000, Point.CARTESIAN);
     /**Dropoff Pose for HP */
     private final Pose place2Pose = new Pose(27, 27, Math.toRadians(-145));
     /** Highest (Third) Sample from the Spike Mark */
