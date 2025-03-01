@@ -123,8 +123,12 @@ public class SpecLiftSubsystem {
         setTarget(specLiftToHumanPlayer);
     }
 
+    public void toHang() {
+        setTarget(specLiftToHang);
+    }
+
     public void toTransfer() {
-        setTarget(liftToTransfer);
+        setTarget(specLiftToTransfer);
     }
 
     public void toPark() {

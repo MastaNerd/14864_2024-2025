@@ -19,7 +19,7 @@ public class ServoArmSubsystem {
     public ElapsedTime timer;
 
     public ServoArmSubsystem(HardwareMap hardwareMap, ArmState state) {
-        LeftArmServo = hardwareMap.get(Servo.class, "Left Arm Servo");
+        LeftArmServo = hardwareMap.get(Servo.class, "LeftArmServo");
         RightArmServo = hardwareMap.get(Servo.class, "RightArmServo");
         ClawSpinner = hardwareMap.get(CRServo.class, "ClawSpinner");
         ClawWrist = hardwareMap.get(Servo.class, "ClawWrist");
@@ -92,6 +92,13 @@ public class ServoArmSubsystem {
 
     public void score() {
         setState(ArmState.SCORING);
+    }
+    public void eject() {
+        ClawSpinner.setPower(-1);
+    }
+
+    public void intake() {
+        ClawSpinner.setPower(1);
     }
 
     public void specimenGrab() {

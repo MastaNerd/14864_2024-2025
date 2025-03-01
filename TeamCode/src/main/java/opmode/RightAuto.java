@@ -95,7 +95,7 @@ public class RightAuto extends OpMode {
                                 new Point(pickup1Pose)
                         )
                 )
-                .setLinearHeadingInterpolation(scorePose.getHeading(), pickup1Pose.getHeading(), 0.8)
+                .setLinearHeadingInterpolation(scorePose.getHeading(), pickup1Pose.getHeading(),0.8)
                 .build();
 
         placePickup1 = follower.pathBuilder()
@@ -116,7 +116,7 @@ public class RightAuto extends OpMode {
                                 new Point(pickup2Pose)
                         )
                 )
-                .setLinearHeadingInterpolation(place1Pose.getHeading(), pickup2Pose.getHeading(), 0.8)
+                .setLinearHeadingInterpolation(place1Pose.getHeading(), pickup2Pose.getHeading(), 0.4)
                 .build();
 
         placePickup2 = follower.pathBuilder()
@@ -137,7 +137,7 @@ public class RightAuto extends OpMode {
                                 new Point(pickup3Pose)
                         )
                 )
-                .setLinearHeadingInterpolation(place2Pose.getHeading(), pickup3Pose.getHeading(), 0.8)
+                .setLinearHeadingInterpolation(place2Pose.getHeading(), pickup3Pose.getHeading(), 0.4)
                 .build();
 
         placePickup3 = follower.pathBuilder()
@@ -492,13 +492,6 @@ public class RightAuto extends OpMode {
         SpecimenSlideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         SpecimenSlideMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         SpecimenServo = hardwareMap.get(Servo.class, "Specimen Servo");
-
-        LeftArmServo = hardwareMap.get(Servo.class, "Left Arm Servo");
-        RightArmServo = hardwareMap.get(Servo.class, "RightArmServo");
-        ClawSpinner = hardwareMap.get(CRServo.class, "ClawSpinner");
-        ClawWrist = hardwareMap.get(Servo.class, "ClawWrist");
-        LeftArmServo.setDirection(Servo.Direction.REVERSE);
-        ClawSpinner.setDirection(CRServo.Direction.REVERSE);
 
         Constants.setConstants(FConstants.class, LConstants.class);
         follower = new Follower(hardwareMap);
