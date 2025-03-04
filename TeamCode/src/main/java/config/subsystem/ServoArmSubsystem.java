@@ -34,12 +34,12 @@ public class ServoArmSubsystem {
         if (armState == ArmState.TRANSFER) {
             LeftArmServo.setPosition(lArmTransfer);
             RightArmServo.setPosition(rArmTransfer);
-            ClawWrist.setPosition(clawWristInit);
+            ClawWrist.setPosition(clawWristGrab);
             this.state = ArmState.TRANSFER;
         } else if (armState == ArmState.TOBASKET) {
             LeftArmServo.setPosition(lArmDeposit);
             RightArmServo.setPosition(rArmDeposit);
-            ClawWrist.setPosition(clawWristInit);
+            ClawWrist.setPosition(clawWristDeposit);
         }else if (armState == ArmState.TOP) {
             LeftArmServo.setPosition(lArmDeposit);
             RightArmServo.setPosition(rArmDeposit);
@@ -47,7 +47,7 @@ public class ServoArmSubsystem {
         }else if (armState == ArmState.MIDDLE) {
             LeftArmServo.setPosition(lArmMiddle);
             RightArmServo.setPosition(rArmMiddle);
-            ClawWrist.setPosition(clawWristInit);
+            ClawWrist.setPosition(clawWristGrab);
         }else if (armState == ArmState.SCORING) {
             LeftArmServo.setPosition(lArmDeposit);
             RightArmServo.setPosition(rArmDeposit);
@@ -96,7 +96,9 @@ public class ServoArmSubsystem {
     public void eject() {
         ClawSpinner.setPower(-1);
     }
-
+    public void pause() {
+        ClawSpinner.setPower(0);
+    }
     public void intake() {
         ClawSpinner.setPower(1);
     }
@@ -128,9 +130,10 @@ public class ServoArmSubsystem {
     public void initArm() {setState(ArmState.INIT);}
 
     // Util //
-    public void setPos(double armPos) {
+    public void setPos(double armPos, double clawPos) {
         LeftArmServo.setPosition(armPos);
-        RightArmServo.setPosition(armPos);
+        RightArmServo.setPosition(armPos - 0.045);
+        ClawWrist.setPosition(clawPos);
     }
 
     // Init + Start //

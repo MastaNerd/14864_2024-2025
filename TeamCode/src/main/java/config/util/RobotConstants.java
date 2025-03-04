@@ -23,9 +23,9 @@ public class RobotConstants {
     public static double rArmTransfer= lArmTransfer - 0.045;
     public static double lArmDeposit = 0.595;
     public static double rArmDeposit = lArmDeposit - 0.045;
-    public static double lArmMiddle = 0.655;
+    public static double lArmMiddle = 0.795;
     public static double rArmMiddle = lArmMiddle - 0.045;
-    public static double lArmInter = 0.625;
+    public static double lArmInter = 0.695;
     public static double rArmInter = lArmInter - 0.045;
     public static double lArmInit = 0.195;
     public static double rArmInit = lArmInit - 0.045;
@@ -35,7 +35,7 @@ public class RobotConstants {
     public static double rArmSpecimenReturn = lArmSpecimenReturn - 0.045;
     public static double lArmSpecimenPlace = 0.805;
     public static double rArmSpecimenPlace = lArmSpecimenPlace - 0.045;
-    public static double lArmSpecimenBackPlace = 0.855;
+    public static double lArmSpecimenBackPlace = 0.235;
     public static double rArmSpecimenBackPlace = lArmSpecimenBackPlace - 0.045;
 
 
@@ -80,7 +80,7 @@ public class RobotConstants {
     //Spec Lift
     public static int specLiftToTransfer = 0;
     public static int specLiftToZero = 0;
-    public static int specLiftToScore = 1750;
+    public static int specLiftToScore = 2000;
     public static int specLiftToHumanPlayer = 10;
     public static int specLiftToHang = 1700;
 

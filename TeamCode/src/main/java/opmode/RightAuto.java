@@ -12,6 +12,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import config.subsystem.ServoArmSubsystem;
+import config.subsystem.SpecClawSubsystem;
 import config.subsystem.SpecLiftSubsystem;
 import pedroPathing.constants.FConstants;
 import pedroPathing.constants.LConstants;
@@ -36,6 +37,8 @@ import static config.util.RobotConstants.*;
 @Autonomous(name = "(use in comp)5-Specimen", group = "Examples")
 public class RightAuto extends OpMode {
     public SpecLiftSubsystem specLift;
+    public SpecClawSubsystem specClaw;
+    public SpecClawSubsystem.ClawGrabState clawState;
     public ServoArmSubsystem servoArm;
     public ServoArmSubsystem.ArmState armState;
     private Follower follower;
@@ -43,10 +46,6 @@ public class RightAuto extends OpMode {
     /** This is the variable where we store the state of our auto.
      * It is used by the pathUpdate method. */
     private int pathState;
-    private DcMotor SpecimenSlideMotor;
-    private Servo SpecimenServo,LeftArmServo, RightArmServo, ClawWrist;
-    private CRServo ClawSpinner;
-
     public boolean actionBusy, specliftPIDF = true;
     public double specliftManual = 0;
 
@@ -180,7 +179,7 @@ public class RightAuto extends OpMode {
             case 0:
                 follower.followPath(scorePreload);
                 specLift.setTarget(2000);
-                SpecimenServo.setPosition(1);
+                specClaw.close();
                 servoArm.toTop();
                 setPathState(1);
                 break;
@@ -193,9 +192,9 @@ public class RightAuto extends OpMode {
 
                 break;
             case 2:
-                if(SpecimenSlideMotor.getCurrentPosition() <  1710) {
-                    ClawSpinner.setPower(1);
-                    SpecimenServo.setPosition(0.15);
+                if(specLift.getPos() <  1710) {
+                    servoArm.intake();
+                    specClaw.open();
                     specLift.setTarget(specLift.bottom);
                     follower.followPath(toPickup1, true);
                     servoArm.specimenGrab();;
@@ -217,7 +216,7 @@ public class RightAuto extends OpMode {
                     servoArm.specimenPlace();
                 }
                 if(!follower.isBusy()) {
-                    ClawSpinner.setPower(-1);
+                    servoArm.eject();
                     setPathState(6);
                 }
                 break;
@@ -231,7 +230,7 @@ public class RightAuto extends OpMode {
                 break;
             case 7:
                 if(pathTimer.getElapsedTimeSeconds() > 0.25) {
-                    ClawSpinner.setPower(1);
+                    servoArm.intake();
                 }
                 if(follower.getCurrentTValue() >  0.8){
                     follower.setMaxPower(0.5);
@@ -247,7 +246,7 @@ public class RightAuto extends OpMode {
                     servoArm.specimenPlace();
                 }
                 if(!follower.isBusy()) {
-                    ClawSpinner.setPower(-1);
+                    servoArm.eject();
                     setPathState(10);
                 }
                 break;
@@ -261,7 +260,7 @@ public class RightAuto extends OpMode {
                 break;
             case 12:
                 if(pathTimer.getElapsedTimeSeconds() > 0.25) {
-                    ClawSpinner.setPower(1);
+                    servoArm.intake();
                 }
                 if(follower.getCurrentTValue() >  0.8){
                     follower.setMaxPower(0.3);
@@ -277,7 +276,7 @@ public class RightAuto extends OpMode {
                     servoArm.specimenPlace();
                 }
                 if(!follower.isBusy()) {
-                    ClawSpinner.setPower(-1);
+                    servoArm.eject();
                     setPathState(14);
                 }
                 break;
@@ -294,12 +293,12 @@ public class RightAuto extends OpMode {
                 break;
             case 15:
                 if(pathTimer.getElapsedTimeSeconds() > 0.25) {
-                    ClawSpinner.setPower(1);
+                    servoArm.intake();
                 }
                 if(!follower.isBusy()) {
                     /* Score Sample */
                     /* Since this is a pathChain, we can have Pedro hold the end point while we are parked */
-                    ClawSpinner.setPower(0);
+                    servoArm.pause();
                     follower.followPath(specPickup,true);
                     specLift.toHumanPlayer();
                     setPathState(16);
@@ -310,7 +309,7 @@ public class RightAuto extends OpMode {
                 if(!follower.isBusy()) {
                     /* Grab Sample */
                     /* Since this is a pathChain, we can have Pedro hold the end point while we are scoring the sample */
-                    SpecimenServo.setPosition(specClawClose);
+                    specClaw.close();
                     setPathState(17);
                 }
                 break;
@@ -321,7 +320,6 @@ public class RightAuto extends OpMode {
                     /* Since this is a pathChain, we can have Pedro hold the end point while we are parked */
                     follower.followPath(scoreFromPickup,true);
                     specLift.setTarget(2000);
-                    SpecimenServo.setPosition(1);
                     setPathState(18);
                 }
                 break;
@@ -334,8 +332,8 @@ public class RightAuto extends OpMode {
                 break;
             case 19:
                 /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the pickup1Pose's position */
-                if(SpecimenSlideMotor.getCurrentPosition() <  1710) {
-                    SpecimenServo.setPosition(0.15);
+                if(specLift.getPos() <  1710) {
+                    specClaw.open();
                     specLift.toHumanPlayer();
                     follower.followPath(scoreToPickup, true);
                     setPathState(20);
@@ -346,7 +344,7 @@ public class RightAuto extends OpMode {
                 if(follower.getCurrentTValue() >= 0.80) {
                     /* Grab Sample */
                     /* Since this is a pathChain, we can have Pedro hold the end point while we are scoring the sample */
-                    SpecimenServo.setPosition(specClawClose);
+                    specClaw.close();
                     setPathState(21);
                 }
                 break;
@@ -357,7 +355,7 @@ public class RightAuto extends OpMode {
                     /* Since this is a pathChain, we can have Pedro hold the end point while we are parked */
                     follower.followPath(scoreFromPickup,true);
                     specLift.setTarget(2000);
-                    SpecimenServo.setPosition(1);
+                    specClaw.close();
                     setPathState(22);
                 }
                 break;
@@ -370,8 +368,8 @@ public class RightAuto extends OpMode {
                 break;
             case 23:
                 /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the pickup1Pose's position */
-                if(SpecimenSlideMotor.getCurrentPosition() <  1710) {
-                    SpecimenServo.setPosition(0.15);
+                if(specLift.getPos() <  1710) {
+                    specClaw.open();
                     specLift.setTarget(specLift.bottom);
                     follower.followPath(scoreToPickup, true);
                     setPathState(24);
@@ -382,7 +380,7 @@ public class RightAuto extends OpMode {
                 if(follower.getCurrentTValue() >= 0.80) {
                     /* Grab Sample */
                     /* Since this is a pathChain, we can have Pedro hold the end point while we are scoring the sample */
-                    SpecimenServo.setPosition(specClawClose);
+                    specClaw.close();
                     setPathState(25);
                 }
                 break;
@@ -393,7 +391,7 @@ public class RightAuto extends OpMode {
                     /* Since this is a pathChain, we can have Pedro hold the end point while we are parked */
                     follower.followPath(scoreFromPickup,true);
                     specLift.setTarget(2000);
-                    SpecimenServo.setPosition(1);
+                    specClaw.close();
                     setPathState(26);
                 }
                 break;
@@ -406,8 +404,8 @@ public class RightAuto extends OpMode {
                 break;
             case 27:
                 /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the pickup1Pose's position */
-                if(SpecimenSlideMotor.getCurrentPosition() <  1710) {
-                    SpecimenServo.setPosition(0.15);
+                if(specLift.getPos() <  1710) {
+                    specClaw.open();
                     specLift.toHumanPlayer();
                     follower.followPath(scoreToPickup, true);
                     setPathState(28);
@@ -418,7 +416,7 @@ public class RightAuto extends OpMode {
                 if(follower.getCurrentTValue() >= 0.80) {
                     /* Grab Sample */
                     /* Since this is a pathChain, we can have Pedro hold the end point while we are scoring the sample */
-                    SpecimenServo.setPosition(specClawClose);
+                    specClaw.close();
                     setPathState(29);
                 }
                 break;
@@ -429,7 +427,7 @@ public class RightAuto extends OpMode {
                     /* Since this is a pathChain, we can have Pedro hold the end point while we are parked */
                     follower.followPath(scoreFromPickup,true);
                     specLift.setTarget(2000);
-                    SpecimenServo.setPosition(1);
+                    specClaw.close();
                     setPathState(30);
                 }
                 break;
@@ -442,10 +440,9 @@ public class RightAuto extends OpMode {
                 break;
             case 31:
                 /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the pickup1Pose's position */
-                if(SpecimenSlideMotor.getCurrentPosition() <  1710) {
-                    SpecimenServo.setPosition(0.15);
+                if(specLift.getPos() <  1710) {
+                    specClaw.open();
                     specLift.setTarget(specLift.bottom);
-                    follower.followPath(scoreToPickup, true);
                     setPathState(32);
                 }
                 break;
@@ -488,14 +485,11 @@ public class RightAuto extends OpMode {
         opmodeTimer = new Timer();
         opmodeTimer.resetTimer();
 
-        SpecimenSlideMotor = hardwareMap.get(DcMotor.class, "Specimen Slide Motor");
-        SpecimenSlideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        SpecimenSlideMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        SpecimenServo = hardwareMap.get(Servo.class, "Specimen Servo");
-
         Constants.setConstants(FConstants.class, LConstants.class);
         follower = new Follower(hardwareMap);
         follower.setStartingPose(startPose);
+
+        specClaw = new SpecClawSubsystem(hardwareMap, clawState);
 
         servoArm = new ServoArmSubsystem(hardwareMap, armState);
         servoArm.init();

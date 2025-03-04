@@ -10,6 +10,8 @@ public class FConstants {
     static {
         FollowerConstants.localizers = Localizers.PINPOINT;
 
+        FollowerConstants.useBrakeModeInTeleOp = true;
+
         FollowerConstants.leftFrontMotorName = "FL Motor";
         FollowerConstants.leftRearMotorName = "BL Motor";
         FollowerConstants.rightFrontMotorName = "FR Motor";
