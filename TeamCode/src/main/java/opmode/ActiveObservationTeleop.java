@@ -27,8 +27,8 @@ import pedroPathing.constants.LConstants;
 
 import static config.util.RobotConstants.*;
 
-@TeleOp(name = "Observation Teleop", group = "Examples")
-public class ObservationTeleop extends OpMode {
+@TeleOp(name = "Active Observation Teleop", group = "Examples")
+public class ActiveObservationTeleop extends OpMode {
     public enum DriveState {
         DRIVERCONTROL, TOPICKUP, TOSCORE, FROMSCORE, SCORING, PICKUP
     }

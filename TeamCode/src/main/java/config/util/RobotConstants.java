@@ -43,15 +43,15 @@ public class RobotConstants {
     public static int liftToHighBucket = 3200;
 
     //Claw Arm
-    public static double armTransfer= 0.066; //.05
+    public static double armTransfer= 0.13; //.05
     public static double armDeposit = 0.595;
     public static double armMiddle = 0.655;
     public static double armInit = 0.195;
     public static double armSpecimenGrab = 0.77;
+    public static double armSpecimenPickup = 0.77;
     public static double armFolded = 0.13;
     public static double armSpecimenPlace = 0.805;
     public static double armSpecimenBackPlace = 0.855;
-    public static double armSpecimenPickup = 0.2;
 
     //Diffy Servos For Claw Arm
     public static double lDiffyTransfer= 0.066;
@@ -86,8 +86,8 @@ public class RobotConstants {
 
 
     //SpecCLaw
-    public static double specClawOpen = 0.15;
-    public static double specClawClose = 1.0;
+    public static double specClawOpen = 0.23;
+    public static double specClawClose = 0.65;
 
 
     public static double extendManualIncrements = 0.05;

@@ -19,10 +19,10 @@ public class SpecArmSubsystem {
     public ElapsedTime timer;
 
     public SpecArmSubsystem(HardwareMap hardwareMap, ArmState state) {
-        LeftArmServo = hardwareMap.get(Servo.class, "LeftArmServo");
-        RightArmServo = hardwareMap.get(Servo.class, "RightArmServo");
-        LeftDiffyServo = hardwareMap.get(Servo.class, "Left Diffy Servo");
-        RightDiffyServo = hardwareMap.get(Servo.class, "Right Diffy Servo");
+        LeftArmServo = hardwareMap.get(Servo.class, "Left Arm Servo");
+        RightArmServo = hardwareMap.get(Servo.class, "Right Arm Servo");
+        LeftDiffyServo = hardwareMap.get(Servo.class, "Left Diffy");
+        RightDiffyServo = hardwareMap.get(Servo.class, "Right Diffy");
         ClawServo = hardwareMap.get(Servo.class, "Claw Servo");
 
         LeftDiffyServo.setDirection(Servo.Direction.REVERSE);
@@ -123,6 +123,13 @@ public class SpecArmSubsystem {
 
     public void closeClaw() {
         ClawServo.setPosition(armClawClose);
+    }
+
+    public void setPos(double armPos, double lDiffyPos, double rDiffyPos) {
+        LeftArmServo.setPosition(armPos);
+        RightArmServo.setPosition(armPos);
+        LeftDiffyServo.setPosition(lDiffyPos);
+        RightDiffyServo.setPosition(rDiffyPos);
     }
 
     // Init + Start //
