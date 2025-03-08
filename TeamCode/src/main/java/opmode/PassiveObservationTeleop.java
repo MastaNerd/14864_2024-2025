@@ -55,6 +55,7 @@ public class PassiveObservationTeleop extends OpMode {
     private DcMotor FLMotor;
     private DcMotor BRMotor;
     private DcMotor FRMotor;
+    private double initalHangPos;
     private RevBlinkinLedDriver Blinkin;
     float xDrive;
     float yDrive;
@@ -74,6 +75,7 @@ public class PassiveObservationTeleop extends OpMode {
             this.driveState = DriveState.SCORING;
         }else if(driveState == DriveState.HANG){
             Blinkin.setPattern(RevBlinkinLedDriver.BlinkinPattern.LAWN_GREEN);
+            initalHangPos = regLift.getPos();
             this.driveState = DriveState.HANG;
         }else if (driveState == DriveState.TOSCORE) {
             specLift.toScore();
@@ -175,6 +177,12 @@ public class PassiveObservationTeleop extends OpMode {
             BRMotor.setPower(-0.1);
             BLMotor.setPower(-0.1);
             regLift.manual(-0.75);
+            if(initalHangPos - regLift.getPos() > 400){
+                regLift.manual(-0.4);
+            }
+            if(initalHangPos - regLift.getPos() < 200){
+                regLift.manual(-0.75);
+            }
             if (gamepad1.a) {
                 Blinkin.setPattern(RevBlinkinLedDriver.BlinkinPattern.WHITE);
                 setState(DriveState.DRIVERCONTROL);

@@ -32,7 +32,7 @@ import pedroPathing.constants.LConstants;
 
 import static config.util.RobotConstants.*;
 
-@TeleOp(name = "Passive Observation Teleop", group = "Examples")
+@TeleOp(name = "DONT USE Passive Observation Teleop", group = "Examples")
 public class FixedPassiveObservationTeleop extends OpMode {
     public enum DriveState {
         DRIVERCONTROL, TOPICKUP, TOSCORE, FROMSCORE, SCORING, PICKUP, HANG
