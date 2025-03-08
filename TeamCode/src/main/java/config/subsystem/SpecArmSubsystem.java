@@ -2,6 +2,7 @@ package config.subsystem;
 
 import static config.util.RobotConstants.*;
 
+import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -33,8 +34,7 @@ public class SpecArmSubsystem {
     // State //
     public void setState(ArmState armState) {
         if (armState == ArmState.INIT) {
-            LeftArmServo.setPosition(armInit);
-            RightArmServo.setPosition(armInit);
+            ClawServo.setPosition(armClawOpen);
             this.state = ArmState.INIT;
         }else if (armState == ArmState.MIDDLE) {
             LeftArmServo.setPosition(armMiddle);
@@ -110,6 +110,10 @@ public class SpecArmSubsystem {
         setState(ArmState.SPECPLACE);
     }
 
+    public double getCurrPos() {
+        return LeftArmServo.getPosition();
+    }
+
     public void toMiddle() {
         setState(ArmState.MIDDLE);
     }
@@ -130,6 +134,18 @@ public class SpecArmSubsystem {
         RightArmServo.setPosition(armPos);
         LeftDiffyServo.setPosition(lDiffyPos);
         RightDiffyServo.setPosition(rDiffyPos);
+    }
+
+    public void pickupBlock(Timer clawTimer) {
+        LeftArmServo.setPosition(0.79);
+        RightArmServo.setPosition(0.79);
+        if(clawTimer.getElapsedTimeSeconds() > 0.1){
+            ClawServo.setPosition(armClawClose);
+        }
+        if(clawTimer.getElapsedTimeSeconds() > 0.5){
+            LeftArmServo.setPosition(0.79);
+            RightArmServo.setPosition(0.79);
+        }
     }
 
     // Init + Start //

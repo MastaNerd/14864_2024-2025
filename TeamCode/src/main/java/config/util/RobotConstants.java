@@ -40,7 +40,7 @@ public class RobotConstants {
 
 
     public static int liftToZero = 0;
-    public static int liftToHighBucket = 3200;
+    public static int liftToHighBucket = 2900;
 
     //Claw Arm
     public static double armTransfer= 0.13; //.05
@@ -74,14 +74,14 @@ public class RobotConstants {
     public static double rDiffySpecimenBackPlace = 0.855;
 
     //Claw Arm Open/Close
-    public static double armClawOpen = 0.65;
-    public static double armClawClose = 0.34;
+    public static double armClawOpen = 0.37;
+    public static double armClawClose = 0.74;
 
     //Spec Lift
     public static int specLiftToTransfer = 0;
     public static int specLiftToZero = 0;
-    public static int specLiftToScore = 2000;
-    public static int specLiftToHumanPlayer = 10;
+    public static int specLiftToScore = 1975;
+    public static int specLiftToHumanPlayer = 25;
     public static int specLiftToHang = 1700;
 
 

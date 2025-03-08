@@ -33,7 +33,7 @@ import pedroPathing.constants.LConstants;
 import static config.util.RobotConstants.*;
 
 @TeleOp(name = "Passive Observation Teleop", group = "Examples")
-public class PassiveObservationTeleop extends OpMode {
+public class FixedPassiveObservationTeleop extends OpMode {
     public enum DriveState {
         DRIVERCONTROL, TOPICKUP, TOSCORE, FROMSCORE, SCORING, PICKUP, HANG
     }
@@ -62,7 +62,7 @@ public class PassiveObservationTeleop extends OpMode {
 
 
     private final Pose specPickupPose = new Pose(8.5, 36.125, Math.toRadians(90));
-    private  final Pose scorePose = new Pose(38, 66, Math.toRadians(270));
+    private  final Pose scorePose = new Pose(38, 76, Math.toRadians(270));
     private final Pose startPose = new Pose(13, 30, Math.toRadians(225));
 
     public void setState(DriveState driveState) {
@@ -119,7 +119,7 @@ public class PassiveObservationTeleop extends OpMode {
 
         scoreFromPickup = follower.pathBuilder()
                 .addPath(new BezierLine(new Point(specPickupPose), new Point(scorePose)))
-                .setLinearHeadingInterpolation(specPickupPose.getHeading(), scorePose.getHeading())
+                .setLinearHeadingInterpolation(specPickupPose.getHeading(), scorePose.getHeading(), 0.6)
                 .build();
         scoreToPickup = follower.pathBuilder()
                 .addPath(new BezierLine(new Point(scorePose), new Point(specPickupPose)))
